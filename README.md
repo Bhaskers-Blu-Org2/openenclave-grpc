@@ -1,4 +1,5 @@
 # grpc_openenclave
+Please note that this prototype is built on OE v0.5
 ## Build instructions
 ### Clone repo
 `git clone https://github.com/radhikaj/grpc_openenclave.git --recursive`
