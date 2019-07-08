@@ -1,0 +1,53 @@
+//
+// Copyright 2018 Asylo authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+package hello_world;
+
+
+
+// Extension to EnclaveInput for use with HelloWorld enclave.
+message HelloInput {
+  optional string to_greet = 1;
+}
+
+message HelloOutput {
+  optional string greeting_message = 1;
+}
+
+// Input passed to an enclave after it has been initialized with EnclaveConfig.
+message EnclaveInput {
+  // Allow user extensions.
+  extensions 1000 to max;
+}
+
+// An output message produced by an enclave for an invocation of its `Run`
+// entry-point. This message can be used to send information out of the enclave
+// back to an untrusted caller.
+message EnclaveOutput {
+  // Allow user extensions.
+  extensions 1000 to max;
+}
+
+extend EnclaveInput {
+  optional HelloInput enclave_input_hello = 8086;
+}
+
+extend EnclaveOutput {
+  optional HelloOutput enclave_output_hello = 8087;
+}

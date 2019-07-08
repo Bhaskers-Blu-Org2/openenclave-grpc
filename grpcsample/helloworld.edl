@@ -1,0 +1,22 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+enclave {
+from "socket.edl" import *;
+from "libcxx.edl" import *;
+from "pthread.edl" import *;
+from "eventfd.edl" import *;
+from "inet.edl" import *;
+from "netdb.edl" import *;
+from  "epoll.edl" import *;
+from  "fcntl.edl" import *;
+
+
+
+
+    trusted {
+    public int ecall_run();
+    };
+};
+
+

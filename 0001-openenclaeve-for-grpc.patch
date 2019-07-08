@@ -1,0 +1,78 @@
+From 55833dc4018d72c838f031f2bf9ef3acfda15e4b Mon Sep 17 00:00:00 2001
+From: Radhika Jandhyala <radhikaj@microsoft.com>
+Date: Wed, 20 Feb 2019 18:52:18 +0000
+Subject: [PATCH] GRPC for OE
+
+Enclave for GRPC
+
+Fix the clock_gettime
+
+Modify fcntl
+---
+ 3rdparty/musl/musl/include/fcntl.h | 2 +-
+ enclave/core/pthread.c             | 7 ++-----
+ libc/sgx/syscalls.c                | 7 +++----
+ 3 files changed, 6 insertions(+), 10 deletions(-)
+
+diff --git a/3rdparty/musl/musl/include/fcntl.h b/3rdparty/musl/musl/include/fcntl.h
+index 4d91338..1fcb399 100644
+--- a/3rdparty/musl/musl/include/fcntl.h
++++ b/3rdparty/musl/musl/include/fcntl.h
+@@ -30,7 +30,7 @@ struct flock {
+ };
+ 
+ int creat(const char *, mode_t);
+-int fcntl(int, int, ...);
++int fcntl(int, int, long);
+ int open(const char *, int, ...);
+ int openat(int, const char *, int, ...);
+ int posix_fadvise(int, off_t, off_t, int);
+diff --git a/enclave/core/pthread.c b/enclave/core/pthread.c
+index a4a0e96..5de27f9 100644
+--- a/enclave/core/pthread.c
++++ b/enclave/core/pthread.c
+@@ -243,11 +243,8 @@ int oe_pthread_cond_timedwait(
+     oe_pthread_mutex_t* mutex,
+     const struct oe_timespec* ts)
+ {
+-    OE_UNUSED(cond);
+-    OE_UNUSED(mutex);
+-    OE_UNUSED(ts);
+-    oe_assert("oe_pthread_cond_timedwait(): panic" == NULL);
+-    return -1;
++	OE_UNUSED(ts);
++	return _to_errno(oe_cond_wait((oe_cond_t*)cond, (oe_mutex_t*)mutex));
+ }
+ 
+ int oe_pthread_cond_signal(oe_pthread_cond_t* cond)
+diff --git a/libc/sgx/syscalls.c b/libc/sgx/syscalls.c
+index 0fbdc6d..4484c40 100644
+--- a/libc/sgx/syscalls.c
++++ b/libc/sgx/syscalls.c
+@@ -136,7 +136,7 @@ _syscall_writev(long n, long x1, long x2, long x3, long x4, long x5, long x6)
+ 
+ static long _syscall_clock_gettime(long n, long x1, long x2)
+ {
+-    clockid_t clk_id = (clockid_t)x1;
++    //clockid_t clk_id = (clockid_t)x1;
+     struct timespec* tp = (struct timespec*)x2;
+     int ret = -1;
+     uint64_t msec;
+@@ -146,12 +146,11 @@ static long _syscall_clock_gettime(long n, long x1, long x2)
+     if (!tp)
+         goto done;
+ 
+-    if (clk_id != CLOCK_REALTIME)
++    /*if (clk_id != CLOCK_REALTIME)
+     {
+-        /* Only supporting CLOCK_REALTIME */
+         oe_assert("clock_gettime(): panic" == NULL);
+         goto done;
+-    }
++    }*/
+ 
+     if ((msec = oe_get_time()) == (uint64_t)-1)
+         goto done;
+-- 
+2.7.4
+

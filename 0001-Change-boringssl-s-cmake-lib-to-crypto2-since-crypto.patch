@@ -1,0 +1,75 @@
+From 3f624945a6e6dacda1475c019878659df12065dc Mon Sep 17 00:00:00 2001
+From: radhikaj <radhikaj@live.com>
+Date: Tue, 25 Jun 2019 22:12:08 +0000
+Subject: [PATCH] Change boringssl's cmake lib to crypto2 since crypto is used
+ by openenclave
+
+---
+ crypto/CMakeLists.txt | 10 +++++-----
+ ssl/CMakeLists.txt    |  4 ++--
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/crypto/CMakeLists.txt b/crypto/CMakeLists.txt
+index 1095916..1e895a4 100644
+--- a/crypto/CMakeLists.txt
++++ b/crypto/CMakeLists.txt
+@@ -163,7 +163,7 @@ if(FIPS_DELOCATE)
+ endif()
+ 
+ add_library(
+-  crypto
++  crypto1
+ 
+   $<TARGET_OBJECTS:crypto_base>
+   $<TARGET_OBJECTS:stack>
+@@ -207,13 +207,13 @@ add_library(
+ )
+ 
+ if(FIPS_DELOCATE)
+-  add_dependencies(crypto bcm_o_target)
++  add_dependencies(crypto1 bcm_o_target)
+ endif()
+ 
+-SET_TARGET_PROPERTIES(crypto PROPERTIES LINKER_LANGUAGE C)
++SET_TARGET_PROPERTIES(crypto1 PROPERTIES LINKER_LANGUAGE C)
+ 
+ if(NOT MSVC AND NOT ANDROID)
+-  target_link_libraries(crypto pthread)
++  target_link_libraries(crypto1 pthread)
+ endif()
+ 
+ # TODO(davidben): Convert the remaining tests to GTest.
+@@ -273,7 +273,7 @@ add_executable(
+   $<TARGET_OBJECTS:test_support>
+ )
+ 
+-target_link_libraries(crypto_test crypto boringssl_gtest)
++target_link_libraries(crypto_test crypto1 boringssl_gtest)
+ if (WIN32)
+   target_link_libraries(crypto_test ws2_32)
+ endif()
+diff --git a/ssl/CMakeLists.txt b/ssl/CMakeLists.txt
+index 3eab0b5..48dc16c 100644
+--- a/ssl/CMakeLists.txt
++++ b/ssl/CMakeLists.txt
+@@ -42,7 +42,7 @@ add_library(
+   tls13_server.cc
+ )
+ 
+-target_link_libraries(ssl crypto)
++target_link_libraries(ssl crypto1)
+ 
+ add_executable(
+   ssl_test
+@@ -54,7 +54,7 @@ add_executable(
+   $<TARGET_OBJECTS:test_support>
+ )
+ 
+-target_link_libraries(ssl_test ssl crypto boringssl_gtest)
++target_link_libraries(ssl_test ssl crypto1 boringssl_gtest)
+ if (WIN32)
+   target_link_libraries(ssl_test ws2_32)
+ endif()
+-- 
+2.7.4
+

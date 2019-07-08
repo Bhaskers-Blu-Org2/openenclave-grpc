@@ -1,0 +1,76 @@
+enclave {
+    include "netdb.h"
+    include "netdb_types.h"
+
+    trusted {
+    };
+
+    untrusted {
+        oe_getaddrinfo_result_t oe_host_ocall_getaddrinfo([in, string] const char * a, [in, string] const char * b, [in] const struct addrinfo * c, [in, out] struct addrinfo ** d);
+
+        oe_freeaddrinfo_result_t oe_host_ocall_freeaddrinfo([user_check] struct addrinfo * a);
+
+        oe_getnameinfo_result_t oe_host_ocall_getnameinfo([in, size=b] const struct sockaddr * a, socklen_t b, [in, out, size=d] char * c, socklen_t d, [in, out, size=f] char * e, socklen_t f, int g);
+
+        oe_gai_strerror_result_t oe_host_ocall_gai_strerror(int a);
+
+        oe_sethostent_result_t oe_host_ocall_sethostent(int a);
+
+        oe_endhostent_result_t oe_host_ocall_endhostent();
+
+        oe_gethostent_result_t oe_host_ocall_gethostent();
+
+        oe_setnetent_result_t oe_host_ocall_setnetent(int a);
+
+        oe_endnetent_result_t oe_host_ocall_endnetent();
+
+        oe_getnetent_result_t oe_host_ocall_getnetent();
+
+        oe_getnetbyaddr_result_t oe_host_ocall_getnetbyaddr(uint32_t a, int b);
+
+        oe_getnetbyname_result_t oe_host_ocall_getnetbyname([in, string] const char * a);
+
+        oe_setservent_result_t oe_host_ocall_setservent(int a);
+
+        oe_endservent_result_t oe_host_ocall_endservent();
+
+        oe_getservent_result_t oe_host_ocall_getservent();
+
+        oe_getservbyname_result_t oe_host_ocall_getservbyname([in, string] const char * a, [in, string] const char * b);
+
+        oe_getservbyport_result_t oe_host_ocall_getservbyport(int a, [in, string] const char * b);
+
+        oe_setprotoent_result_t oe_host_ocall_setprotoent(int a);
+
+        oe_endprotoent_result_t oe_host_ocall_endprotoent();
+
+        oe_getprotoent_result_t oe_host_ocall_getprotoent();
+
+        oe_getprotobyname_result_t oe_host_ocall_getprotobyname([in, string] const char * a);
+
+        oe_getprotobynumber_result_t oe_host_ocall_getprotobynumber(int a);
+
+        oe_gethostbyname_result_t oe_host_ocall_gethostbyname([in, string] const char * a);
+
+        oe_gethostbyaddr_result_t oe_host_ocall_gethostbyaddr([in, size=b] const void * a, socklen_t b, int c);
+
+        oe___h_errno_location_result_t oe_host_ocall___h_errno_location();
+
+        oe_herror_result_t oe_host_ocall_herror([in, string] const char * a);
+
+        oe_hstrerror_result_t oe_host_ocall_hstrerror(int a);
+
+        oe_gethostbyname_r_result_t oe_host_ocall_gethostbyname_r([in, string] const char * a, [in, out] struct hostent * b, [in, out, size=d] char * c, size_t d, [in, out] struct hostent ** e, [in, out] int * f);
+
+        oe_gethostbyname2_r_result_t oe_host_ocall_gethostbyname2_r([in, string] const char * a, int b, [in, out] struct hostent * c, [in, out, size=e] char * d, size_t e, [in, out] struct hostent ** f, [in, out] int * g);
+
+        oe_gethostbyname2_result_t oe_host_ocall_gethostbyname2([in, string] const char * a, int b);
+
+        oe_gethostbyaddr_r_result_t oe_host_ocall_gethostbyaddr_r([in, size=b] const void * a, socklen_t b, int c, [in, out] struct hostent * d, [in, out, size=f] char * e, size_t f, [in, out] struct hostent ** g, [in, out] int * h);
+
+        oe_getservbyport_r_result_t oe_host_ocall_getservbyport_r(int a, [in, string] const char * b, [in, out] struct servent * c, [in, out, size=e] char * d, size_t e, [in, out] struct servent ** f);
+
+        oe_getservbyname_r_result_t oe_host_ocall_getservbyname_r([in, string] const char * a, [in, string] const char * b, [in, out] struct servent * c, [in, out, size=e] char * d, size_t e, [in, out] struct servent ** f);
+
+    };
+};

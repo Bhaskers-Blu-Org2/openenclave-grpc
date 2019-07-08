@@ -1,0 +1,24 @@
+enclave {
+    include "fcntl.h"
+    include "fcntl_types.h"
+
+    trusted {
+    };
+
+    untrusted {
+        oe_creat_result_t oe_host_ocall_creat([in, string] const char * a, mode_t b);
+
+        oe_fcntl_result_t oe_host_ocall_fcntl(int a, int b, int64_t c);
+
+        oe_open_result_t oe_host_ocall_open([in, string] const char * a, int b);
+
+        oe_openat_result_t oe_host_ocall_openat(int a, [in, string] const char * b, int c);
+
+        oe_posix_fadvise_result_t oe_host_ocall_posix_fadvise(int a, off_t b, off_t c, int d);
+
+        oe_posix_fallocate_result_t oe_host_ocall_posix_fallocate(int a, off_t b, off_t c);
+
+        oe_lockf_result_t oe_host_ocall_lockf(int a, int b, off_t c);
+
+    };
+};

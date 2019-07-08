@@ -1,0 +1,50 @@
+enclave {
+    include "sys/socket.h"
+    include "socket_types.h"
+
+    trusted {
+    };
+
+    untrusted {
+        oe_socket_result_t oe_host_ocall_socket(int a, int b, int c);
+
+        oe_socketpair_result_t oe_host_ocall_socketpair(int a, int b, int c, [in, out] int d[2]);
+
+        oe_bind_result_t oe_host_ocall_bind(int a, [in, size=c] const struct sockaddr * b, socklen_t c);
+
+        oe_getsockname_result_t oe_host_ocall_getsockname(int a, [in, out, size=c_] struct sockaddr * b, socklen_t c_, [in, out] socklen_t * c);
+
+        oe_connect_result_t oe_host_ocall_connect(int a, [in, size=c] const struct sockaddr * b, socklen_t c);
+
+        oe_getpeername_result_t oe_host_ocall_getpeername(int a, [in, out, size=c_] struct sockaddr * b, socklen_t c_, [in, out] socklen_t * c);
+
+        oe_send_result_t oe_host_ocall_send(int a, [in, size=c] const void * b, int c, int d);
+
+        oe_recv_result_t oe_host_ocall_recv(int a, [in, out, size=c] void * b, int c, int d);
+
+        oe_sendto_result_t oe_host_ocall_sendto(int a, [in, size=c] const void * b, int c, int d, [user_check] const struct sockaddr * e, socklen_t f);
+
+        oe_recvfrom_result_t oe_host_ocall_recvfrom(int a, [in, out, size=c] void * b, int c, int d, [user_check] struct sockaddr * e, socklen_t f_, [in, out] socklen_t * f);
+
+
+        oe_sendmsg_result_t oe_host_ocall_sendmsg(int a, [in] struct msghdr * b, int c, [in, size=msg_namelen] void * msg_name, int msg_namelen, [in, count=msg_iovlen]  struct iovec *msg_iov, int msg_iovlen, 
+        [in, size=msg_controllen] void *msg_control, int msg_controllen, int msg_flags, [in, size=total_iovlen] void *iov_buffer, int total_iovlen );
+
+        oe_recvmsg_result_t oe_host_ocall_recvmsg(int a, [in, out] struct msghdr * b, int c,  [in, size=msg_namelen] void * msg_name, int msg_namelen, [in, out] int *actual_msg_namelen,  [in, out, count=msg_iovlen]  struct iovec *msg_iov, int msg_iovlen, [in, out] int *actual_msg_iovlen,  [in, out, size=msg_controllen] void *msg_control, int msg_controllen, [in, out] int *actual_msg_controllen, [in,out] int *msg_flags, [in,out,size=individual_iov_len] void *individual_iov_buffer, int individual_iov_len, [in, out] int * actual_individual_iov_len);
+
+        oe_getsockopt_result_t oe_host_ocall_getsockopt(int a, int b, int c, [in, out, size=e_] void * d, socklen_t e_, [in, out] socklen_t * e);
+
+        oe_setsockopt_result_t oe_host_ocall_setsockopt(int a, int b, int c, [in, size=e] const void * d, socklen_t e);
+
+        oe_listen_result_t oe_host_ocall_listen(int a, int b);
+
+        oe_accept_result_t oe_host_ocall_accept(int a, [in, out, size=c_] struct sockaddr * b, socklen_t c_, [in, out] socklen_t * c);
+
+        oe_shutdown_result_t oe_host_ocall_shutdown(int a, int b);
+
+        oe_sockatmark_result_t oe_host_ocall_sockatmark(int a);
+
+        oe_isfdtype_result_t oe_host_ocall_isfdtype(int a, int b);
+
+    };
+};

@@ -1,0 +1,28 @@
+enclave {
+    include "pthread.h"
+    include "pthread_types.h"
+
+    trusted {
+    };
+
+    untrusted {
+        oe_pthread_condattr_init_result_t oe_host_ocall_pthread_condattr_init([in, out] pthread_condattr_t * a);
+
+        oe_pthread_condattr_destroy_result_t oe_host_ocall_pthread_condattr_destroy([in, out] pthread_condattr_t * a);
+
+        oe_pthread_condattr_getpshared_result_t oe_host_ocall_pthread_condattr_getpshared([in] const pthread_condattr_t * a, [in, out] int * b);
+
+        oe_pthread_condattr_setpshared_result_t oe_host_ocall_pthread_condattr_setpshared([in, out] pthread_condattr_t * a, int b);
+
+        oe_pthread_condattr_getclock_result_t oe_host_ocall_pthread_condattr_getclock([in] const pthread_condattr_t * a, [in, out] __clockid_t * b);
+
+        oe_pthread_condattr_setclock_result_t oe_host_ocall_pthread_condattr_setclock([in, out] pthread_condattr_t * a, __clockid_t b);
+
+        oe_pthread_attr_init_result_t oe_host_ocall_pthread_attr_init([in, out] pthread_attr_t * a);
+
+        oe_pthread_attr_destroy_result_t oe_host_ocall_pthread_attr_destroy([in, out] pthread_attr_t * a);
+
+        oe_pthread_attr_setdetachstate_result_t oe_host_ocall_pthread_attr_setdetachstate([in, out] pthread_attr_t * a, int b);
+
+    };
+};

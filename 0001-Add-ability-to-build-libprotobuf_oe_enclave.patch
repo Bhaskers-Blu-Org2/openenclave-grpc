@@ -1,0 +1,129 @@
+From 48aa2b95a9b7befa61cd3048827231c884abe4ed Mon Sep 17 00:00:00 2001
+From: radhikaj <radhikaj@live.com>
+Date: Wed, 24 Apr 2019 23:37:09 +0000
+Subject: [PATCH] Add ability to build libprotobuf_oe_enclave
+
+Install protobuf_oe_enclave.pc
+
+Remove pthread from cmake target
+
+Add fPIC for compiling protobuf
+---
+ cmake/install.cmake                | 11 +++++++----
+ cmake/libprotobuf.cmake            | 23 +++++++++++++++++++++++
+ cmake/protobuf_oe_enclave.pc.cmake | 11 +++++++++++
+ protobuf_oe_enclave.pc.in          | 12 ++++++++++++
+ 4 files changed, 53 insertions(+), 4 deletions(-)
+ create mode 100644 cmake/protobuf_oe_enclave.pc.cmake
+ create mode 100644 protobuf_oe_enclave.pc.in
+
+diff --git a/cmake/install.cmake b/cmake/install.cmake
+index 9b2ae93..a8bb050 100644
+--- a/cmake/install.cmake
++++ b/cmake/install.cmake
+@@ -4,8 +4,11 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/protobuf.pc.cmake
+                ${CMAKE_CURRENT_BINARY_DIR}/protobuf.pc @ONLY)
+ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/protobuf-lite.pc.cmake
+                ${CMAKE_CURRENT_BINARY_DIR}/protobuf-lite.pc @ONLY)
++configure_file(${CMAKE_CURRENT_SOURCE_DIR}/protobuf_oe_enclave.pc.cmake
++               ${CMAKE_CURRENT_BINARY_DIR}/protobuf_oe_enclave.pc @ONLY)
+ 
+-set(_protobuf_libraries libprotobuf-lite libprotobuf)
++
++set(_protobuf_libraries libprotobuf-lite libprotobuf libprotobuf_oe_enclave)
+ if (protobuf_BUILD_PROTOC_BINARIES)
+     list(APPEND _protobuf_libraries libprotoc)
+ endif (protobuf_BUILD_PROTOC_BINARIES)
+@@ -40,7 +43,7 @@ if (protobuf_BUILD_PROTOC_BINARIES)
+   endif()
+ endif (protobuf_BUILD_PROTOC_BINARIES)
+ 
+-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/protobuf.pc ${CMAKE_CURRENT_BINARY_DIR}/protobuf-lite.pc DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/protobuf.pc ${CMAKE_CURRENT_BINARY_DIR}/protobuf-lite.pc ${CMAKE_CURRENT_BINARY_DIR}/protobuf_oe_enclave.pc DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+ 
+ file(STRINGS extract_includes.bat.in _extract_strings
+   REGEX "^copy")
+@@ -121,12 +124,12 @@ configure_file(protobuf-options.cmake
+ # Allows the build directory to be used as a find directory.
+ 
+ if (protobuf_BUILD_PROTOC_BINARIES)
+-  export(TARGETS libprotobuf-lite libprotobuf libprotoc protoc
++  export(TARGETS libprotobuf-lite libprotobuf libprotobuf_oe_enclave libprotoc protoc
+     NAMESPACE protobuf::
+     FILE ${CMAKE_INSTALL_CMAKEDIR}/protobuf-targets.cmake
+   )
+ else (protobuf_BUILD_PROTOC_BINARIES)
+-  export(TARGETS libprotobuf-lite libprotobuf
++  export(TARGETS libprotobuf-lite libprotobuf libprotobuf_oe_enclave
+     NAMESPACE protobuf::
+     FILE ${CMAKE_INSTALL_CMAKEDIR}/protobuf-targets.cmake
+   )
+diff --git a/cmake/libprotobuf.cmake b/cmake/libprotobuf.cmake
+index 9a434a7..296bd90 100644
+--- a/cmake/libprotobuf.cmake
++++ b/cmake/libprotobuf.cmake
+@@ -133,3 +133,26 @@ set_target_properties(libprotobuf PROPERTIES
+     OUTPUT_NAME ${LIB_PREFIX}protobuf
+     DEBUG_POSTFIX "${protobuf_DEBUG_POSTFIX}")
+ add_library(protobuf::libprotobuf ALIAS libprotobuf)
++
++
++# The enclave lib is always static
++find_package(OpenEnclave CONFIG REQUIRED)
++add_library(libprotobuf_oe_enclave STATIC 
++  ${libprotobuf_lite_files} ${libprotobuf_files} ${libprotobuf_includes} ${libprotobuf_rc_files})
++target_link_libraries(libprotobuf_oe_enclave PUBLIC
++  openenclave::oeenclave
++  openenclave::oelibcxx)
++target_link_libraries(libprotobuf_oe_enclave PUBLIC ${CMAKE_THREAD_LIBS_INIT})
++if(protobuf_WITH_ZLIB)
++    target_link_libraries(libprotobuf_oe_enclave PUBLIC ${ZLIB_LIBRARIES})
++endif()
++target_include_directories(libprotobuf_oe_enclave PUBLIC ${protobuf_source_dir}/src)
++set_target_properties(libprotobuf_oe_enclave PROPERTIES
++    VERSION ${protobuf_VERSION}
++    OUTPUT_NAME ${LIB_PREFIX}protobuf_oe_enclave
++    DEBUG_POSTFIX "${protobuf_DEBUG_POSTFIX}")
++add_library(protobuf::libprotobuf_oe_enclave ALIAS libprotobuf_oe_enclave)
++
++
++target_compile_options(libprotobuf PUBLIC
++    -fPIC)
+diff --git a/cmake/protobuf_oe_enclave.pc.cmake b/cmake/protobuf_oe_enclave.pc.cmake
+new file mode 100644
+index 0000000..f211b87
+--- /dev/null
++++ b/cmake/protobuf_oe_enclave.pc.cmake
+@@ -0,0 +1,11 @@
++prefix=@CMAKE_INSTALL_PREFIX@
++exec_prefix=@CMAKE_INSTALL_PREFIX@
++libdir=@CMAKE_INSTALL_FULL_LIBDIR@
++includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
++
++Name: Protocol Buffers
++Description: Google's Data Interchange Format
++Version: @protobuf_VERSION@
++Libs: -L${libdir} -lprotobuf_oe_enclave
++Cflags: -I${includedir}
++Conflicts: protobuf-lite
+diff --git a/protobuf_oe_enclave.pc.in b/protobuf_oe_enclave.pc.in
+new file mode 100644
+index 0000000..2b4b166
+--- /dev/null
++++ b/protobuf_oe_enclave.pc.in
+@@ -0,0 +1,12 @@
++prefix=@prefix@
++exec_prefix=@exec_prefix@
++libdir=@libdir@
++includedir=@includedir@
++
++Name: Protocol Buffers
++Description: Google's Data Interchange Format
++Version: @VERSION@
++Libs: -L${libdir} -lprotobuf_oe_enclave
++Libs.private: @LIBS@
++Cflags: -I${includedir} @CXXFLAGS@
++Conflicts: protobuf-lite
+-- 
+2.7.4
+

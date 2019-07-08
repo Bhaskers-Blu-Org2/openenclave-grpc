@@ -1,0 +1,16 @@
+enclave {
+    include "eventfd.h"
+    include "eventfd_types.h"
+
+    trusted {
+    };
+
+    untrusted {
+        oe_eventfd_result_t oe_host_ocall_eventfd(unsigned int a, int b);
+
+        oe_eventfd_read_result_t oe_host_ocall_eventfd_read(int a, [in, out] eventfd_t * b);
+
+        oe_eventfd_write_result_t oe_host_ocall_eventfd_write(int a, eventfd_t b);
+
+    };
+};
