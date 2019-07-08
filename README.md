@@ -2,7 +2,7 @@
 Please note that this prototype is built on OE v0.5
 ## Build instructions
 ### Clone repo
-`git clone https://github.com/openenclave/grpc_openenclave.git --recursive`
+`git clone https://github.com/openenclave/openenclave-grpc.git --recursive`
 
 `cd ~/grpc_openenclave`
 
